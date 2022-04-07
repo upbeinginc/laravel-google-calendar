@@ -18,66 +18,68 @@ class GoogleCalendarServiceProvider extends ServiceProvider
     {
         $this->mergeConfigFrom(__DIR__.'/../config/google-calendar.php', 'google-calendar');
 
-        $this->app->bind(GoogleCalendar::class, function () {
-            $config = config('google-calendar');
+        // $this->app->bind(GoogleCalendar::class, function () {
+        //     // $config = config('google-calendar');
 
-            $this->guardAgainstInvalidConfiguration($config);
+        //     // $this->guardAgainstInvalidConfiguration($config);
 
-            return GoogleCalendarFactory::createForCalendarId($config['calendar_id']);
-        });
+        //     // return GoogleCalendarFactory::createForCalendarId($config['calendar_id']);
+        // });
+
+        $this->app->bind(GoogleCalendar::class);
 
         $this->app->alias(GoogleCalendar::class, 'laravel-google-calendar');
     }
 
-    protected function guardAgainstInvalidConfiguration(array $config = null)
-    {
-        if (empty($config['calendar_id'])) {
-            throw InvalidConfiguration::calendarIdNotSpecified();
-        }
+    // protected function guardAgainstInvalidConfiguration(array $config = null)
+    // {
+    //     if (empty($config['calendar_id'])) {
+    //         throw InvalidConfiguration::calendarIdNotSpecified();
+    //     }
 
-        $authProfile = $config['default_auth_profile'];
+    //     $authProfile = $config['default_auth_profile'];
 
-        if ($authProfile === 'service_account') {
-            $this->validateServiceAccountConfigSettings($config);
+    //     if ($authProfile === 'service_account') {
+    //         $this->validateServiceAccountConfigSettings($config);
 
-            return;
-        }
+    //         return;
+    //     }
 
-        if ($authProfile === 'oauth') {
-            $this->validateOAuthConfigSettings($config);
+    //     if ($authProfile === 'oauth') {
+    //         $this->validateOAuthConfigSettings($config);
 
-            return;
-        }
+    //         return;
+    //     }
 
-        throw InvalidConfiguration::invalidAuthenticationProfile($authProfile);
-    }
+    //     throw InvalidConfiguration::invalidAuthenticationProfile($authProfile);
+    // }
 
-    protected function validateServiceAccountConfigSettings(array $config = null)
-    {
-        $credentials = $config['auth_profiles']['service_account']['credentials_json'];
+    // protected function validateServiceAccountConfigSettings(array $config = null)
+    // {
+    //     $credentials = $config['auth_profiles']['service_account']['credentials_json'];
 
-        $this->validateConfigSetting($credentials);
-    }
+    //     $this->validateConfigSetting($credentials);
+    // }
 
-    protected function validateOAuthConfigSettings(array $config = null)
-    {
-        $credentials = $config['auth_profiles']['oauth']['credentials_json'];
+    // protected function validateOAuthConfigSettings(array $config = null)
+    // {
+    //     $credentials = $config['auth_profiles']['oauth']['credentials_json'];
 
-        $this->validateConfigSetting($credentials);
+    //     $this->validateConfigSetting($credentials);
 
-        $token = $config['auth_profiles']['oauth']['token_json'];
+    //     $token = $config['auth_profiles']['oauth']['token_json'];
 
-        $this->validateConfigSetting($token);
-    }
+    //     $this->validateConfigSetting($token);
+    // }
 
-    protected function validateConfigSetting(string $setting)
-    {
-        if (! is_array($setting) && ! is_string($setting)) {
-            throw InvalidConfiguration::credentialsTypeWrong($setting);
-        }
+    // protected function validateConfigSetting(string $setting)
+    // {
+    //     if (! is_array($setting) && ! is_string($setting)) {
+    //         throw InvalidConfiguration::credentialsTypeWrong($setting);
+    //     }
 
-        if (is_string($setting) && ! file_exists($setting)) {
-            throw InvalidConfiguration::credentialsJsonDoesNotExist($setting);
-        }
-    }
+    //     if (is_string($setting) && ! file_exists($setting)) {
+    //         throw InvalidConfiguration::credentialsJsonDoesNotExist($setting);
+    //     }
+    // }
 }

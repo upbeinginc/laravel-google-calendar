@@ -5,17 +5,13 @@ namespace Spatie\GoogleCalendar;
 use Carbon\Carbon;
 use Carbon\CarbonInterface;
 use DateTime;
-use Google_Service_Calendar_Event;
-use Google_Service_Calendar_EventAttendee;
-use Google_Service_Calendar_EventDateTime;
-use Google_Service_Calendar_EventSource;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
 
 class Event
 {
-    /** @var \Google_Service_Calendar_Event */
+    /** @var \Google\Service\Calendar\Event */
     public $googleEvent;
 
     /** @var string */
@@ -27,16 +23,16 @@ class Event
     public function __construct()
     {
         $this->attendees = [];
-        $this->googleEvent = new Google_Service_Calendar_Event;
+        $this->googleEvent = new \Google\Service\Calendar\Event;
     }
 
     /**
-     * @param \Google_Service_Calendar_Event $googleEvent
+     * @param \Google\Service\Calendar\Event $googleEvent
      * @param $calendarId
      *
      * @return static
      */
-    public static function createFromGoogleCalendarEvent(Google_Service_Calendar_Event $googleEvent, $calendarId)
+    public static function createFromGoogleCalendarEvent(\Google\Service\Calendar\Event $googleEvent, $calendarId)
     {
         $event = new static;
 
@@ -93,7 +89,7 @@ class Event
         $useUserOrder = isset($queryParameters['orderBy']);
 
         return collect($googleEventsList)
-            ->map(function (Google_Service_Calendar_Event $event) use ($calendarId) {
+            ->map(function (\Google\Service\Calendar\Event $event) use ($calendarId) {
                 return static::createFromGoogleCalendarEvent($event, $calendarId);
             })
             ->sortBy(function (self $event, $index) use ($useUserOrder) {
@@ -208,7 +204,7 @@ class Event
 
     public function addAttendee(array $attendee)
     {
-        $this->attendees[] = new Google_Service_Calendar_EventAttendee([
+        $this->attendees[] = new \Google\Service\Calendar\EventAttendee([
             'email' => $attendee['email'],
             'comment' => $attendee['comment'] ?? null,
             'displayName' => $attendee['name'] ?? null,
@@ -244,7 +240,7 @@ class Event
 
     protected function setDateProperty(string $name, CarbonInterface $date)
     {
-        $eventDateTime = new Google_Service_Calendar_EventDateTime;
+        $eventDateTime = new \Google\Service\Calendar\EventDateTime;
 
         if (in_array($name, ['start.date', 'end.date'])) {
             $eventDateTime->setDate($date->format('Y-m-d'));
@@ -267,7 +263,7 @@ class Event
 
     protected function setSourceProperty(array $value)
     {
-        $source = new Google_Service_Calendar_EventSource([
+        $source = new \Google\Service\Calendar\EventSource([
             'title' => $value['title'],
             'url' => $value['url'],
         ]);
